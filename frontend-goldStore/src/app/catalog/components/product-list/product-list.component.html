@@ -1,0 +1,89 @@
+<div class="content">
+  <div class="main-container">
+    <!-- Pestaña colapsable para móviles y tablets -->
+    <div class="search-tab" (click)="toggleSearchForm()">
+      Filtros de búsqueda <span class="arrow">&#9660;</span>
+    </div>
+
+    <!-- Formulario de búsqueda -->
+    <div class="search-form" [ngClass]="{ expanded: isSearchExpanded }">
+      <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
+        <div class="campos">
+          <!-- Menú desplegable para categoría -->
+          <select formControlName="categoria">
+            <option value="">Seleccione una categoría</option>
+            <option value="hombre">Hombre</option>
+            <option value="mujer">Mujer</option>
+            <option value="nino">Niño</option>
+            <option value="nina">Niña</option>
+            <option value="unisexAdultos">Unisex Adultos</option>
+            <option value="unisexNinos">Unisex Niños</option>
+          </select>
+
+          <!-- Menú desplegable para material -->
+          <select formControlName="material">
+            <option value="">Seleccione un material</option>
+            <option value="oro de 18 kilates">Oro de 18 kilates</option>
+            <option value="oro laminado">Oro laminado</option>
+            <option value="oro de 24 kilates">Oro de 24 kilates</option>
+          </select>
+
+          <input
+            formControlName="minPrice"
+            type="number"
+            placeholder="Precio Mínimo"
+          />
+          <input
+            formControlName="maxPrice"
+            type="number"
+            placeholder="Precio Máximo"
+          />
+        </div>
+
+        <div class="form-buttons">
+          <button type="button" class="resetear" (click)="resetForm()">
+            Limpiar
+          </button>
+          <button type="submit" class="buscar">Buscar</button>
+        </div>
+      </form>
+
+      <!-- Flecha de colapso para móviles/tablets -->
+      <div class="collapse-arrow" (click)="toggleSearchForm()">
+        <span class="arrow">&#9650;</span>
+      </div>
+    </div>
+
+    <!-- Catálogo de productos -->
+    <div class="catalog">
+      @for (product of products; track $index) {
+      <div class="product-card">
+        <div class="image-container" (click)="expandImage(product.picture)">
+          <img
+            [src]="product.picture"
+            alt="{{ product.nombre }}"
+            class="product-image"
+          />
+        </div>
+        <div class="product-details">
+          <h2>{{ product.nombre }}</h2>
+          <p><strong>Material:</strong> {{ product.material }}</p>
+          <p><strong>Categoría:</strong> {{ product.categoria }}</p>
+          <p><strong>Accesorio:</strong> {{ product.accesorio }}</p>
+          <p>{{ product.descripcion }}</p>
+          <p class="price">Precio: {{ product.precioDeCompra | currency }}</p>
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Modal para la imagen expandida -->
+    <div class="modal" *ngIf="isExpanded" (click)="closeImage()">
+      <img
+        [src]="expandedImageUrl"
+        alt="Imagen expandida"
+        class="expanded-image"
+      />
+    </div>
+  </div>
+</div>

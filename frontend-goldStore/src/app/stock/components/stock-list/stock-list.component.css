@@ -1,0 +1,93 @@
+/* Estilo general */
+.content {
+  background-color: #123456;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.main-container {
+  width: 90%;
+  max-width: 1200px;
+  background-color: rgba(18, 52, 86, 0.95);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+h1 {
+  color: #f8d653;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Estilo de la tabla */
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #f8d653;
+}
+
+th {
+  background-color: rgba(248, 214, 83, 0.1);
+  color: #f8d653;
+}
+
+td {
+  color: #e0e0e0;
+}
+
+/* Botones */
+button {
+  background-color: #f8d653;
+  color: #123456;
+  border: none;
+  padding: 8px 16px;
+  margin-right: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #efb810;
+}
+
+button[color="warn"] {
+  background-color: #e74c3c;
+  color: white;
+}
+
+button[color="warn"]:hover {
+  background-color: #c0392b;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  th, td {
+    font-size: 0.9em;
+    padding: 8px;
+  }
+
+  button {
+    padding: 6px 12px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .table-container {
+    margin: 0 auto;
+    max-width: 1000px;
+  }
+}

@@ -1,0 +1,114 @@
+backend
+├── controllers
+│   ├── products.js
+│   ├── users.js (futuro)
+│   └── sales.js (futuro)
+├── models
+│   ├── Product.js
+│   ├── User.js (futuro)
+│   └── Sale.js (futuro)
+├── routes
+│   ├── products.js
+│   ├── users.js (futuro)
+│   └── sales.js (futuro)
+├── middlewares
+│   ├── auth.js (futuro)
+│   └── validators.js (futuro)
+├── utils
+│   ├── db.js (conexión a MongoDB)
+│   └── helpers.js (funciones útiles)
+├── config
+│   └── config.js (variables de entorno)
+└── index.js (punto de entrada)
+
+
+frontend/
+├── src/
+│   ├── app/
+│   │   ├── catalog/ (módulo de catálogo)
+│   │   │   ├── components/
+│   │   │   │   ├── product-list/
+│   │   │   │   └── product-detail/
+│   │   │   ├── pages/
+│   │   │   │   └── catalog-page/
+│   │   │   └── catalog.module.ts
+│   │   ├── admin/ (módulo de administración, futuro)
+│   │   ├── auth/ (módulo de autenticación, futuro)
+│   │   ├── shared/ (módulo compartido)
+│   │   │   ├── components/
+│   │   │   ├── services/
+│   │   │   └── shared.module.ts
+│   │   ├── app-routing.module.ts
+│   │   ├── app.component.ts
+│   │   └── app.module.ts
+│   ├── assets/ (imágenes, estilos, etc.)
+│   └── styles.css (estilos globales)
+
+
+/* Fondo principal */
+body {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Fondo secundario */
+.card {
+  background-color: #2d2d2d;
+  border: 1px solid #d4af37;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 10px;
+}
+
+/* Títulos */
+h1, h2, h3 {
+  color: #d4af37;
+}
+
+/* Texto destacado */
+.highlight {
+  color: #ffffff;
+}
+
+/* Botones */
+button {
+  background-color: #d
+
+Estrategia de Desarrollo
+Fase 1: Catálogo de Productos:
+
+Enfócate en crear el módulo de catálogo para mostrar los productos.
+
+Usa Angular Material para una interfaz limpia y responsiva.
+
+Conecta el frontend con el backend para obtener y mostrar los productos.
+
+Fase 2: Administración de Productos:
+
+Agrega un módulo de administración para crear, editar y eliminar productos.
+
+Implementa autenticación para restringir el acceso a este módulo.
+
+Fase 3: Sistema de Ventas:
+
+Crea un módulo de ventas para gestionar transacciones.
+
+Agrega un carrito de compras y pasarela de pago (futuro).
+
+Fase 4: Escalabilidad:
+
+Implementa roles de usuario (admin, cliente).
+
+Agrega funcionalidades avanzadas como inventario, reportes, etc.
+
+Consejos Finales
+Mantén el código modular: Esto te permitirá escalar fácilmente.
+
+Usa Git: Crea ramas para cada funcionalidad y haz commits frecuentes.
+
+Documenta tu código: Esto te ayudará a mantener el proyecto organizado.
+
+Pruebas: Implementa pruebas unitarias y de integración para asegurar la calidad del código.
+
+¿Qué te parece esta estructura? ¿Necesitas más detalles sobre alguna parte? 😊

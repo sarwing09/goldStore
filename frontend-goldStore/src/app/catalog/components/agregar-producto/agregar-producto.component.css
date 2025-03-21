@@ -1,0 +1,105 @@
+.content {
+  background-image: url("../../../assets/images/html/pc.jpeg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 70px 20px;
+}
+
+.main-container {
+  width: 90%;
+  max-width: 1200px;
+  background-color: rgba(18, 52, 86, 0.8);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+h1 {
+  color: #f8d653;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.product-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+label {
+  color: #e0e0e0;
+  font-size: 1em;
+}
+
+input, select, textarea {
+  padding: 10px;
+  border: 1px solid #f8d653;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #e0e0e0;
+  font-size: 1em;
+}
+
+input::placeholder, select::placeholder, textarea::placeholder {
+  color: #e0e0e0;
+  opacity: 0.7;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #efb810;
+  background-color: rgba(255, 255, 255, 0.2);
+  outline: none;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+button[type="submit"] {
+  background-color: #f8d653;
+  color: #123456;
+}
+
+button[type="button"] {
+  background-color: #e0e0e0;
+  color: #123456;
+}
+
+button:hover {
+  background-color: #efb810;
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #ff6b6b; /* Color rojo claro para los mensajes de error */
+  font-size: 0.9em;
+  margin-top: 5px;
+}

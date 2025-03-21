@@ -1,0 +1,26 @@
+<div class="dashboard-trigger" (mouseenter)="showDashboard()"></div>
+
+<!-- Botón de menú de hamburguesa para móviles y tablets -->
+<div class="hamburger-menu" (click)="toggleDashboard()">
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
+
+<!-- Overlay para cerrar el dashboard en móviles/tablets -->
+<div class="overlay" *ngIf="dashboardActive && isMobile" (click)="toggleDashboard()"></div>
+
+<!-- Dashboard de navegación -->
+<div class="dashboard" [class.active]="dashboardActive" (mouseleave)="hideDashboard()">
+  <div class="dashboard-content">
+    <h2 class="dashboard-title">Gold Store</h2>
+    <nav>
+      <ul>
+        <li><a routerLink="/catalogo/show-catalog">Catálogo</a></li>
+        <li><a routerLink="/catalogo/add-product">Agregar Producto</a></li>
+        <li><a routerLink="/stock">Administrar Stock</a></li>
+        <li><a routerLink="/catalogo/movements">Movimientos de Inventario</a></li>
+      </ul>
+    </nav>
+  </div>
+</div>

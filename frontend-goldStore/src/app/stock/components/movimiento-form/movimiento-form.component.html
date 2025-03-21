@@ -1,0 +1,26 @@
+<div class="movimiento-form">
+  <h1>Registrar Movimiento</h1>
+  <form [formGroup]="movimientoForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="fill">
+      <mat-label>Tipo de Movimiento</mat-label>
+      <mat-select formControlName="tipo">
+        <mat-option value="entrada">Entrada</mat-option>
+        <mat-option value="salida">Salida</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Cantidad</mat-label>
+      <input matInput type="number" formControlName="cantidad">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Fecha</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="fecha">
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="movimientoForm.invalid">Guardar Movimiento</button>
+  </form>
+</div>

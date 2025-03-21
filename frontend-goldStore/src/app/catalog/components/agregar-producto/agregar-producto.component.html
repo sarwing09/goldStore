@@ -1,0 +1,116 @@
+<div class="content">
+  <div class="main-container">
+    <h1>Agregar Nuevo Producto</h1>
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="picture">Imagen del Producto</label>
+        <input type="file" id="picture" (change)="onFileSelected($event)" accept="image/*" />
+        <div *ngIf="!selectedFile && productForm.get('picture')?.touched" class="error-message">
+          Por favor, selecciona una imagen.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="productId">Código del producto</label>
+        <input type="text" id="productId" formControlName="productId" placeholder="Código del producto" />
+        <div *ngIf="productForm.get('productId')?.hasError('required') && productForm.get('productId')?.touched" class="error-message">
+          El código del producto es requerido.
+        </div>
+        <div *ngIf="productForm.get('productId')?.hasError('pattern') && productForm.get('productId')?.touched" class="error-message">
+          El código debe contener solo letras y números (5-20 caracteres).
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="nombre">Nombre del Producto</label>
+        <input type="text" id="nombre" formControlName="nombre" placeholder="Nombre del producto" />
+        <div *ngIf="productForm.get('nombre')?.hasError('required') && productForm.get('nombre')?.touched" class="error-message">
+          El nombre es requerido.
+        </div>
+        <div *ngIf="productForm.get('nombre')?.hasError('minlength') && productForm.get('nombre')?.touched" class="error-message">
+          El nombre debe tener al menos 3 caracteres.
+        </div>
+        <div *ngIf="productForm.get('nombre')?.hasError('maxlength') && productForm.get('nombre')?.touched" class="error-message">
+          El nombre no puede exceder los 100 caracteres.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="precioDeCompra">Precio de Compra</label>
+        <input type="number" id="precioDeCompra" formControlName="precioDeCompra" placeholder="Precio de compra" />
+        <div *ngIf="productForm.get('precioDeCompra')?.hasError('required') && productForm.get('precioDeCompra')?.touched" class="error-message">
+          El precio es requerido.
+        </div>
+        <div *ngIf="productForm.get('precioDeCompra')?.hasError('min') && productForm.get('precioDeCompra')?.touched" class="error-message">
+          El precio debe ser mayor o igual a 0.
+        </div>
+        <div *ngIf="productForm.get('precioDeCompra')?.hasError('max') && productForm.get('precioDeCompra')?.touched" class="error-message">
+          El precio no puede exceder 1,000,000.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="accesorio">Accesorio</label>
+        <select id="accesorio" formControlName="accesorio">
+          <option value="">Seleccione un accesorio</option>
+          <option value="anillo">Anillo</option>
+          <option value="brazalete">Brazalete</option>
+          <option value="cadena">Cadena</option>
+          <option value="esclava">Esclava</option>
+          <option value="arete">Arete</option>
+        </select>
+        <div *ngIf="productForm.get('accesorio')?.hasError('required') && productForm.get('accesorio')?.touched" class="error-message">
+          El accesorio es requerido.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="material">Material</label>
+        <select id="material" formControlName="material">
+          <option value="">Seleccione un material</option>
+          <option value="oro de 18 kilates">Oro de 18 kilates</option>
+          <option value="oro laminado">Oro laminado</option>
+          <option value="oro de 24 kilates">Oro de 24 kilates</option>
+        </select>
+        <div *ngIf="productForm.get('material')?.hasError('required') && productForm.get('material')?.touched" class="error-message">
+          El material es requerido.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="categoria">Categoría</label>
+        <select id="categoria" formControlName="categoria">
+          <option value="">Seleccione una categoría</option>
+          <option value="hombre">Hombre</option>
+          <option value="mujer">Mujer</option>
+          <option value="nino">Niño</option>
+          <option value="nina">Niña</option>
+          <option value="unisexAdultos">Unisex Adultos</option>
+          <option value="unisexNinos">Unisex Niños</option>
+        </select>
+        <div *ngIf="productForm.get('categoria')?.hasError('required') && productForm.get('categoria')?.touched" class="error-message">
+          La categoría es requerida.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="descripcion">Descripción</label>
+        <textarea id="descripcion" formControlName="descripcion" placeholder="Descripción del producto"></textarea>
+        <div *ngIf="productForm.get('descripcion')?.hasError('required') && productForm.get('descripcion')?.touched" class="error-message">
+          La descripción es requerida.
+        </div>
+        <div *ngIf="productForm.get('descripcion')?.hasError('minlength') && productForm.get('descripcion')?.touched" class="error-message">
+          La descripción debe tener al menos 10 caracteres.
+        </div>
+        <div *ngIf="productForm.get('descripcion')?.hasError('maxlength') && productForm.get('descripcion')?.touched" class="error-message">
+          La descripción no puede exceder los 500 caracteres.
+        </div>
+      </div>
+
+      <div class="form-buttons">
+        <button type="submit" [disabled]="productForm.invalid">Agregar Producto</button>
+        <button type="button" (click)="productForm.reset()">Limpiar</button>
+      </div>
+    </form>
+  </div>
+</div>
