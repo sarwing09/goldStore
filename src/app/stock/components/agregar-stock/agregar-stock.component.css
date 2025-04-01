@@ -1,0 +1,240 @@
+.console-container {
+  background: #0a121f;
+  min-height: 100vh;
+  padding: 2rem;
+  color: #e0e0e0;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.console-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(248, 214, 83, 0.1);
+}
+
+.console-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.console-title h2 {
+  color: #f8d653;
+  margin: 0;
+  font-size: 1.8em;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+.console-title mat-icon {
+  color: #f8d653;
+  font-size: 2em;
+}
+
+.console-count {
+  background: rgba(248, 214, 83, 0.1);
+  color: #f8d653;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+  border: 1px solid rgba(248, 214, 83, 0.2);
+}
+
+.console-form-container {
+  background: #0e1727;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid rgba(248, 214, 83, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.console-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.console-input-field {
+  width: 100%;
+}
+
+.product-info-card {
+  background: rgba(18, 52, 86, 0.8);
+  border-radius: 8px;
+  padding: 1.5rem;
+  border-left: 4px solid #4CAF50;
+}
+
+.product-info-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.product-info-header h3 {
+  color: #e0e0e0;
+  margin: 0;
+  font-weight: 500;
+}
+
+.product-info-header mat-icon {
+  color: #4CAF50;
+}
+
+.product-info-body p {
+  color: #a0a0a0;
+  margin: 0;
+  font-size: 0.9em;
+}
+
+.autocomplete-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.product-id {
+  color: #f8d653;
+  font-weight: 500;
+  width: 100px;
+}
+
+.product-name {
+  flex-grow: 1;
+  margin: 0 1rem;
+}
+
+.product-details {
+  color: #a0a0a0;
+  font-size: 0.8em;
+  width: 200px;
+  text-align: right;
+}
+
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  color: #f8d653;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.console-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Roboto Mono', monospace;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.console-btn.primary {
+  background: #f8d653;
+  color: #123456;
+  border: 1px solid rgba(18, 52, 86, 0.3);
+}
+
+.console-btn.primary:disabled {
+  background: rgba(248, 214, 83, 0.3);
+  color: rgba(18, 52, 86, 0.5);
+  cursor: not-allowed;
+}
+
+.console-btn.secondary {
+  background: transparent;
+  color: #f8d653;
+  border: 1px solid rgba(248, 214, 83, 0.3);
+}
+
+.console-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.console-btn.primary:hover:not(:disabled) {
+  background: #efb810;
+}
+
+.console-btn.secondary:hover:not(:disabled) {
+  background: rgba(248, 214, 83, 0.1);
+}
+
+.mat-form-field-appearance-outline .mat-form-field-outline {
+  color: rgba(248, 214, 83, 0.3);
+}
+
+.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+  color: #f8d653;
+}
+
+.mat-form-field-label {
+  color: rgba(224, 224, 224, 0.7) !important;
+}
+
+.mat-input-element {
+  color: #e0e0e0 !important;
+}
+
+.mat-autocomplete-panel {
+  background: #0e1727 !important;
+  border: 1px solid rgba(248, 214, 83, 0.3) !important;
+}
+
+.mat-option {
+  background: #0e1727 !important;
+  color: #e0e0e0 !important;
+}
+
+.mat-option:hover {
+  background: rgba(248, 214, 83, 0.1) !important;
+}
+
+@media (max-width: 768px) {
+  .console-container {
+    padding: 1.5rem;
+  }
+
+  .console-form-container {
+    padding: 1.5rem;
+  }
+
+  .form-section {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .console-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .console-title h2 {
+    font-size: 1.4em;
+  }
+}

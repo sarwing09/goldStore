@@ -1,0 +1,74 @@
+<div class="dashboard-trigger" (mouseenter)="showDashboard()"></div>
+
+<!-- Botón de menú de hamburguesa para móviles y tablets -->
+<div class="hamburger-menu" (click)="toggleDashboard()">
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
+
+<!-- Overlay para cerrar el dashboard en móviles/tablets -->
+<div
+  class="overlay"
+  *ngIf="dashboardActive && isMobile"
+  (click)="toggleDashboard()"
+></div>
+
+<!-- Dashboard de navegación -->
+<div
+  class="dashboard"
+  [class.active]="dashboardActive"
+  (mouseleave)="hideDashboard()"
+>
+  <div class="dashboard-content">
+    <h2 class="dashboard-title">Gold Store</h2>
+    <nav>
+      <ul>
+        <li>
+          <a routerLink="/catalogo/admin-catalog" (click)="isMobile && toggleDashboard()">
+            <mat-icon>inventory_2</mat-icon>
+            <span>Catálogo</span>
+            <div class="badge">12</div>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/tienda" (click)="isMobile && toggleDashboard()">
+            <mat-icon>store</mat-icon>
+            <span>Tienda</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/catalogo/add-product" (click)="isMobile && toggleDashboard()">
+            <mat-icon>add_box</mat-icon>
+            <span>Insertar Producto</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/stock" (click)="isMobile && toggleDashboard()">
+            <mat-icon>inventory</mat-icon>
+            <span>Stock</span>
+            <div class="badge danger">3</div>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/stock/agregar-stock" (click)="isMobile && toggleDashboard()">
+            <mat-icon>playlist_add</mat-icon>
+            <span>Movimiento inicial</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/stock/agregar-movimiento" (click)="isMobile && toggleDashboard()">
+            <mat-icon>compare_arrows</mat-icon>
+            <span>Insertar movimientos</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/stock/buscar-movimientos" (click)="isMobile && toggleDashboard()">
+            <mat-icon>history</mat-icon>
+            <span>Historial de movimientos</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>

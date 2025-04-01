@@ -1,0 +1,112 @@
+<div class="console-container">
+  <div class="console-header">
+    <div class="console-title">
+      <mat-icon>add_box</mat-icon>
+      <h2>Agregar Nuevo Producto</h2>
+    </div>
+    <div class="console-controls">
+      <span class="console-count">{{productsCount}} campos</span>
+    </div>
+  </div>
+
+  <div class="console-content">
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="console-form">
+      <!-- Sección de imagen -->
+      <div class="image-section">
+        <label class="image-upload-label">
+          <input type="file" id="picture" (change)="onFileSelected($event)" accept="image/*" hidden>
+          <div class="image-preview" [class.has-image]="selectedFile">
+            @if (selectedFile) {
+              <img [src]="imagePreview" alt="Vista previa de la imagen">
+            } @else {
+              <mat-icon>add_photo_alternate</mat-icon>
+              <span>Haz clic para subir una imagen</span>
+            }
+          </div>
+        </label>
+        @if (uploadProgress !== null) {
+          <mat-progress-bar mode="determinate" [value]="uploadProgress"></mat-progress-bar>
+          <p class="upload-status">Subiendo imagen... {{uploadProgress}}%</p>
+        }
+      </div>
+
+      <!-- Campos del formulario -->
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="productId">Código del Producto</label>
+          <input type="text" id="productId" formControlName="productId" class="console-input">
+          <div class="validation-message" *ngIf="productForm.get('productId')?.hasError('required') && productForm.get('productId')?.touched">
+            ⚠ Campo requerido
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="nombre">Nombre</label>
+          <input type="text" id="nombre" formControlName="nombre" class="console-input">
+          <div class="validation-message" *ngIf="productForm.get('nombre')?.hasError('required') && productForm.get('nombre')?.touched">
+            ⚠ Debe contener mínimo 3 caracteres
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="precioDeCompra">Precio</label>
+          <input type="number" id="precioDeCompra" formControlName="precioDeCompra" class="console-input">
+          <div class="validation-message" *ngIf="productForm.get('precioDeCompra')?.hasError('min') && productForm.get('precioDeCompra')?.touched">
+            ⚠ El precio mínimo es $10.000
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="accesorio">Tipo de Accesorio</label>
+          <select id="accesorio" formControlName="accesorio" class="console-select">
+            <option value="">Seleccionar...</option>
+            <option value="anillo">Anillo</option>
+            <option value="brazalete">Brazalete</option>
+            <option value="cadena">Cadena</option>
+            <option value="esclava">Esclava</option>
+            <option value="arete">Arete</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="material">Material</label>
+          <select id="material" formControlName="material" class="console-select">
+            <option value="">Seleccionar...</option>
+            <option value="oro de 18 kilates">Oro 18k</option>
+            <option value="oro laminado">Oro laminado</option>
+            <option value="oro de 24 kilates">Oro 24k</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="categoria">Categoría</label>
+          <select id="categoria" formControlName="categoria" class="console-select">
+            <option value="">Seleccionar...</option>
+            <option value="hombre">Hombre</option>
+            <option value="mujer">Mujer</option>
+            <option value="nino">Niño</option>
+            <option value="nina">Niña</option>
+          </select>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="descripcion">Descripción</label>
+          <textarea id="descripcion" formControlName="descripcion" class="console-textarea"
+                    placeholder="Detalles del producto..."></textarea>
+          <div class="validation-message" *ngIf="productForm.get('descripcion')?.hasError('required') && productForm.get('descripcion')?.touched">
+            ⚠ Descripción obligatoria
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="reset" class="console-btn secondary" (click)="productForm.reset()">
+          <mat-icon>clear_all</mat-icon> Limpiar
+        </button>
+        <button type="submit" class="console-btn primary" [disabled]="productForm.invalid || !selectedFile">
+          <mat-icon>save</mat-icon> Guardar Producto
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

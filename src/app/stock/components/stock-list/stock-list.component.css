@@ -1,0 +1,192 @@
+.console-container {
+  background: #0a121f;
+  min-height: 100vh;
+  padding: 1.5rem;
+  color: #e0e0e0;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.console-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(248, 214, 83, 0.1);
+}
+
+.console-title {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.console-title h2 {
+  color: #f8d653;
+  margin: 0;
+  font-size: 1.5em;
+  font-weight: 400;
+}
+
+.console-title mat-icon {
+  color: #f8d653;
+}
+
+.console-count {
+  background: rgba(248, 214, 83, 0.1);
+  color: #f8d653;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.console-table {
+  background: #0e1727;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(248, 214, 83, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.console-data {
+  width: 100%;
+  background: transparent;
+}
+
+.console-header-row {
+  background: linear-gradient(90deg, #123456 0%, #0a1e32 100%);
+}
+
+.console-th {
+  color: #f8d653 !important;
+  font-size: 0.85em;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 1rem 1.5rem;
+}
+
+.console-row {
+  background: #0e1727;
+  transition: all 0.3s ease;
+}
+
+.console-row:hover {
+  background: rgba(248, 214, 83, 0.03);
+}
+
+.console-td {
+  color: #e0e0e0;
+  padding: 1rem 1.5rem;
+  font-size: 0.95em;
+  border-bottom: 1px solid rgba(248, 214, 83, 0.03);
+}
+
+.code {
+  color: #f8d653;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.9em;
+}
+
+.console-td mat-icon {
+  color: rgba(248, 214, 83, 0.7);
+  margin-right: 0.8rem;
+  font-size: 1.2em;
+  vertical-align: middle;
+}
+
+.stock-indicator {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.stock-indicator.safe {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4CAF50;
+  border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.stock-indicator.danger {
+  background: rgba(255, 107, 107, 0.1);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.2);
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.console-btn {
+  color: rgba(224, 224, 224, 0.7);
+  transition: all 0.3s ease;
+  width: 36px;
+  height: 36px;
+}
+
+.console-btn:hover {
+  color: #f8d653;
+  background: rgba(248, 214, 83, 0.1);
+}
+
+.console-btn.delete:hover {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+}
+
+.console-paginator {
+  margin-top: 1.5rem;
+  background: #0e1727;
+  color: #e0e0e0;
+  border-radius: 8px;
+  border: 1px solid rgba(248, 214, 83, 0.05);
+}
+
+/* Mobile First */
+@media (min-width: 390px) and (max-width: 768px) {
+  .console-container {
+    padding: 1rem;
+  }
+
+  .console-th, .console-td {
+    padding: 0.8rem;
+    font-size: 0.85em;
+  }
+
+  .console-title h2 {
+    font-size: 1.3em;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+}
+
+/* Medium screens */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .console-title h2 {
+    font-size: 1.6em;
+  }
+
+  .console-th, .console-td {
+    font-size: 0.9em;
+  }
+}
+
+/* Large screens */
+@media (min-width: 1025px) {
+  .console-container {
+    padding: 2rem;
+  }
+
+  .console-title h2 {
+    font-size: 1.8em;
+  }
+
+  .console-th, .console-td {
+    font-size: 1em;
+  }
+}

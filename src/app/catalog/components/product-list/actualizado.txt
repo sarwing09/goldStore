@@ -1,0 +1,786 @@
+import { Component, OnInit, HostListener, Inject, PLATFORM_ID, ViewChild } from '@angular/core';
+import { ProductService } from '../../../shared/services/productos/product.service';
+import { StockService } from '../../../shared/services/productos/stock.service';
+import { Product } from '../../../models/product';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+import { BehaviorSubject, combineLatest } from 'rxjs';
+import { switchMap, tap, map } from 'rxjs/operators';
+import { Stock } from '../../../models/stock';
+
+interface PaginationState {
+  pageIndex: number;
+  pageSize: number;
+  length: number;
+}
+
+interface ProductResponse {
+  products: Product[];
+  total: number;
+}
+
+@Component({
+  selector: 'app-product-list',
+  standalone:false,
+  templateUrl: './product-list.component.html',
+  styleUrls: ['./product-list.component.css']
+})
+export class ProductListComponent implements OnInit {
+  dataSource = new MatTableDataSource<Product>([]);
+  paginationState: PaginationState = {
+    pageIndex: 0,
+    pageSize: 10,
+    length: 0
+  };
+
+  searchForm: FormGroup;
+  isExpanded = false;
+  expandedImageUrl = '';
+  isSearchExpanded = true;
+  isMobileOrTablet = false;
+  isLoading = false;
+
+  private paginationSubject = new BehaviorSubject<{pageIndex: number, pageSize: number}>({
+    pageIndex: 0,
+    pageSize: 10
+  });
+  private filtersSubject = new BehaviorSubject<any>({});
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  constructor(
+    private productService: ProductService,
+    private stockService: StockService,
+    private fb: FormBuilder,
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private router: Router
+  ) {
+    this.searchForm = this.fb.group({
+      categoria: [''],
+      material: [''],
+      minPrice: [''],
+      maxPrice: ['']
+    });
+  }
+
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.checkScreenSize();
+    }
+    this.setupDataStream();
+    this.filtersSubject.next(this.searchForm.value);
+  }
+
+  ngAfterViewInit() {
+    this.setupPaginator();
+  }
+
+  private setupDataStream(): void {
+    combineLatest([
+      this.paginationSubject,
+      this.filtersSubject
+    ]).pipe(
+      tap(() => this.isLoading = true),
+      switchMap(([pagination, filters]) => {
+        return this.productService.getProducts(
+          filters,
+          pagination.pageIndex + 1,
+          pagination.pageSize
+        ).pipe(
+          switchMap(response => {
+            this.paginationState.length = response.total;
+            return this.stockService.getAllStock().pipe(
+              map((stockItems: Stock[]) => {
+                return {
+                  products: response.products.map(product => ({
+                    ...product,
+                    stock: stockItems.find(s => s.productId === product.productId)?.cantidad ?? 0
+                  })),
+                  total: response.total
+                };
+              })
+            );
+          })
+        );
+      })
+    ).subscribe({
+      next: ({products, total}: ProductResponse) => {
+        this.dataSource.data = products;
+        this.paginationState.length = total;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading products:', error);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  private setupPaginator(): void {
+    if (this.paginator) {
+      this.paginator.page.subscribe((event: PageEvent) => {
+        this.paginationSubject.next({
+          pageIndex: event.pageIndex,
+          pageSize: event.pageSize
+        });
+      });
+    }
+  }
+
+  onSearch(): void {
+    this.paginationSubject.next({
+      pageIndex: 0,
+      pageSize: this.paginationState.pageSize
+    });
+    this.filtersSubject.next(this.searchForm.value);
+  }
+
+  resetForm(): void {
+    this.searchForm.reset();
+    this.onSearch();
+  }
+
+  expandImage(imageUrl: string): void {
+    this.expandedImageUrl = imageUrl;
+    this.isExpanded = true;
+  }
+
+  closeImage(): void {
+    this.isExpanded = false;
+    this.expandedImageUrl = '';
+  }
+
+  viewDetails(id: string): void {
+    if (id) this.router.navigate(['/catalogo/show-catalog', id]);
+  }
+
+  editProduct(id: string): void {
+    if (id) this.router.navigate(['/catalogo/edit-product', id]);
+  }
+
+  @HostListener('window:resize')
+  checkScreenSize(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.isMobileOrTablet = window.innerWidth <= 1024;
+      this.isSearchExpanded = !this.isMobileOrTablet;
+    }
+  }
+
+  toggleSearchForm(): void {
+    if (this.isMobileOrTablet) {
+      this.isSearchExpanded = !this.isSearchExpanded;
+    }
+  }
+}
+
+/////
+
+<div class="console-container">
+  <div class="console-header">
+    <div class="console-title">
+      <mat-icon>inventory_2</mat-icon>
+      <h2>Catálogo de Productos</h2>
+    </div>
+    <div class="console-controls">
+      <span class="console-count">{{paginationState.length}} artículos</span>
+    </div>
+  </div>
+
+
+  <div class="filter-section">
+    <div class="filter-toggle" (click)="toggleSearchForm()" *ngIf="isMobileOrTablet">
+      <mat-icon>filter_list</mat-icon>
+      <span>Filtros</span>
+      <mat-icon>{{isSearchExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
+    </div>
+
+    <div class="filter-content" [class.expanded]="isSearchExpanded">
+      <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
+        <div class="filter-grid">
+          <div class="filter-group">
+            <label class="filter-label">Categoría</label>
+            <div class="custom-select">
+              <select formControlName="categoria" class="filter-select">
+                <option value="">Todas</option>
+                <option value="hombre">Hombre</option>
+                <option value="mujer">Mujer</option>
+                <option value="nino">Niño</option>
+                <option value="nina">Niña</option>
+                <option value="unisexNinos">Unisex niños</option>
+                <option value="unisexAdultos">Unisex adultos</option>
+              </select>
+              <div class="select-arrow"></div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Material</label>
+            <div class="custom-select">
+              <select formControlName="material" class="filter-select">
+                <option value="">Todos</option>
+                <option value="oro de 18 kilates">Oro 18k</option>
+                <option value="oro laminado">Oro laminado</option>
+                <option value="oro de 24 kilates">Oro 24k</option>
+              </select>
+              <div class="select-arrow"></div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Precio Mínimo</label>
+            <div class="price-input">
+              <span class="currency">$</span>
+              <input type="number" formControlName="minPrice" min="0" class="filter-input no-spinner">
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Precio Máximo</label>
+            <div class="price-input">
+              <span class="currency">$</span>
+              <input type="number" formControlName="maxPrice" min="0" class="filter-input no-spinner">
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-actions">
+          <button type="button" class="filter-btn reset" (click)="resetForm()">
+            <mat-icon>clear</mat-icon>
+            Limpiar
+          </button>
+          <button type="submit" class="filter-btn apply">
+            <mat-icon>search</mat-icon>
+            Aplicar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="product-grid">
+    <div *ngFor="let product of dataSource.data" class="product-card">
+      <div class="card-header">
+        <div class="product-id">
+          <mat-icon>fingerprint</mat-icon>
+          <span>{{product.productId}}</span>
+        </div>
+        <div class="stock-indicator"
+             [class.danger]="product.stock <= 5"
+             [class.safe]="product.stock > 5">
+          <mat-icon>inventory</mat-icon>
+          {{product.stock}} unidades
+        </div>
+      </div>
+
+      <div class="product-image" (click)="expandImage(product.picture)">
+        <img [src]="product.picture" [alt]="product.nombre">
+        <div class="image-hover-effect">
+          <mat-icon>zoom_in</mat-icon>
+        </div>
+      </div>
+
+      <div class="product-info">
+        <h3 class="product-name">{{product.nombre}}</h3>
+        <div class="product-meta">
+          <p><mat-icon>category</mat-icon> {{product.categoria | titlecase}}</p>
+          <p><mat-icon>layers</mat-icon> {{product.material | titlecase}}</p>
+          <p><mat-icon>style</mat-icon> {{product.accesorio | titlecase}}</p>
+        </div>
+        <div class="product-actions">
+          <button mat-icon-button class="action-btn" (click)="viewDetails(product._id)" matTooltip="Ver detalles">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-icon-button class="action-btn" (click)="editProduct(product._id)" matTooltip="Editar">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+        <div class="product-price">
+          {{product.precioDeCompra | currency:'USD':'symbol':'1.2-2'}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Paginador -->
+  <mat-paginator [length]="paginationState.length"
+                 [pageSize]="paginationState.pageSize"
+                 [pageIndex]="paginationState.pageIndex"
+                 [pageSizeOptions]="[5, 10, 20, 50]"
+                 showFirstLastButtons
+                 class="console-paginator">
+  </mat-paginator>
+
+  <!-- Modal de imagen (mantener igual) -->
+  <div class="image-modal" *ngIf="isExpanded" (click)="closeImage()">
+    <!-- ... -->
+  </div>
+
+  <!-- Spinner de carga -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+</div>
+
+/////
+
+/* Estilos base */
+.console-container {
+  background: #0a121f;
+  min-height: 100vh;
+  padding: 2rem;
+  color: #e0e0e0;
+  font-family: 'Roboto Mono', monospace;
+  padding-bottom: 80px;
+}
+
+/* Cabecera */
+.console-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(248, 214, 83, 0.1);
+}
+
+.console-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.console-title h2 {
+  color: #f8d653;
+  margin: 0;
+  font-size: 1.8em;
+  font-weight: 400;
+}
+
+.console-title mat-icon {
+  color: #f8d653;
+  font-size: 2em;
+}
+
+.console-count {
+  background: rgba(248, 214, 83, 0.1);
+  color: #f8d653;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9em;
+}
+
+/* Sección de filtros */
+.filter-section {
+  margin-bottom: 2rem;
+}
+
+.filter-toggle {
+  display: none;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem;
+  background: rgba(18, 52, 86, 0.8);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  font-size: 1em;
+  color: #f8d653;
+  border: 1px solid rgba(248, 214, 83, 0.3);
+}
+
+.filter-content {
+  background: rgba(18, 52, 86, 0.95);
+  padding: 1.5rem;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(248, 214, 83, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-group {
+  margin-bottom: 1rem;
+}
+
+.filter-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #f8d653;
+  font-size: 0.9em;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.custom-select {
+  position: relative;
+  width: 100%;
+}
+
+.filter-select {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background: rgba(10, 23, 39, 0.8);
+  border: 1px solid rgba(248, 214, 83, 0.3);
+  border-radius: 6px;
+  color: #e0e0e0;
+  font-family: 'Roboto Mono', monospace;
+  appearance: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-select:focus {
+  border-color: #f8d653;
+  box-shadow: 0 0 8px rgba(248, 214, 83, 0.2);
+  outline: none;
+}
+
+.select-arrow {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #f8d653;
+  pointer-events: none;
+}
+
+.price-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currency {
+  position: absolute;
+  left: 1rem;
+  color: #f8d653;
+  font-weight: 500;
+}
+
+.filter-input {
+  width: 100%;
+  padding: 0.8rem 1rem 0.8rem 2rem;
+  background: rgba(10, 23, 39, 0.8);
+  border: 1px solid rgba(248, 214, 83, 0.3);
+  border-radius: 6px;
+  color: #e0e0e0;
+  font-family: 'Roboto Mono', monospace;
+  transition: all 0.3s ease;
+}
+
+.filter-input:focus {
+  border-color: #f8d653;
+  box-shadow: 0 0 8px rgba(248, 214, 83, 0.2);
+  outline: none;
+}
+
+.filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.5rem;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Roboto Mono', monospace;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-btn.reset {
+  background: transparent;
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.filter-btn.reset:hover {
+  background: rgba(255, 107, 107, 0.1);
+}
+
+.filter-btn.apply {
+  background: linear-gradient(135deg, #f8d653 0%, #f5b301 100%);
+  color: #123456;
+  font-weight: 500;
+}
+
+.filter-btn.apply:hover {
+  box-shadow: 0 4px 12px rgba(248, 214, 83, 0.4);
+}
+
+/* Grid de productos (estilos existentes) */
+.product-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.product-card {
+  background: #0e1727;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(248, 214, 83, 0.1);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(248, 214, 83, 0.2);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem;
+  background: rgba(18, 52, 86, 0.6);
+}
+
+.product-id {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #f8d653;
+  font-size: 0.9em;
+}
+
+.stock-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.stock-indicator.safe {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4CAF50;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.stock-indicator.danger {
+  background: rgba(255, 107, 107, 0.1);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.product-image {
+  position: relative;
+  height: 250px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.product-image:hover img {
+  transform: scale(1.05);
+}
+
+.image-hover-effect {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 60%, rgba(10, 18, 31, 0.8));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.product-image:hover .image-hover-effect {
+  opacity: 1;
+}
+
+.product-info {
+  padding: 1.5rem;
+}
+
+.product-name {
+  color: #f8d653;
+  margin: 0 0 1rem 0;
+  font-size: 1.2em;
+  min-height: 3em;
+}
+
+.product-meta {
+  display: grid;
+  gap: 0.8rem;
+  margin: 1.5rem 0;
+  color: #a0a0a0;
+  font-size: 0.95em;
+}
+
+.product-meta p {
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+
+.product-meta mat-icon {
+  font-size: 18px;
+  margin-right: 0.8rem;
+  color: rgba(248, 214, 83, 0.7);
+}
+
+.product-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(248, 214, 83, 0.1);
+}
+
+.action-btn {
+  color: rgba(224, 224, 224, 0.7) !important;
+  transition: all 0.2s ease !important;
+}
+
+.action-btn:hover {
+  color: #f8d653 !important;
+  background: rgba(248, 214, 83, 0.1) !important;
+}
+
+.product-price {
+  text-align: right;
+  color: #4CAF50;
+  font-weight: bold;
+  font-size: 1.3em;
+  margin-top: 1rem;
+}
+
+/* Modal de imagen */
+.image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.image-modal img {
+  max-width: 100%;
+  max-height: 80vh;
+  border: 3px solid #f8d653;
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.close-btn {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  background: #f8d653 !important;
+  color: #123456 !important;
+}
+
+/* Paginador fijo */
+.console-paginator {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: #0e1727;
+  color: #e0e0e0;
+  border-radius: 12px;
+  border: 1px solid rgba(248, 214, 83, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  padding: 8px 16px;
+  max-width: 90%;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .filter-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .console-container {
+    padding: 1.5rem;
+  }
+
+  .filter-toggle {
+    display: flex;
+  }
+
+  .filter-content {
+    padding: 1rem;
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border: none;
+  }
+
+  .filter-content.expanded {
+    max-height: 1000px;
+    opacity: 1;
+    padding: 1rem;
+    border: 1px solid rgba(248, 214, 83, 0.3);
+  }
+
+  .filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+
+  .console-paginator {
+    width: 95%;
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .console-title h2 {
+    font-size: 1.4em;
+  }
+
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}

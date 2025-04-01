@@ -1,0 +1,101 @@
+<div class="console-container">
+  <div class="console-header">
+    <div class="console-title">
+      <mat-icon>history</mat-icon>
+      <h2>Historial de Movimientos</h2>
+    </div>
+    <div class="console-controls">
+      <span class="console-count">{{ movimientos.length }} registros</span>
+    </div>
+  </div>
+
+  <div class="search-section">
+    <mat-form-field appearance="outline" class="search-input">
+      <mat-label>Buscar por código</mat-label>
+      <input
+        matInput
+        [matAutocomplete]="auto"
+        [formControl]="productIdControl"
+      />
+      <mat-icon matSuffix>search</mat-icon>
+      <mat-autocomplete
+        #auto="matAutocomplete"
+        (optionSelected)="onOptionSelected($event)"
+      >
+        <mat-option
+          *ngFor="let item of filteredOptions"
+          [value]="item.productId"
+        >
+          {{ item.productId }} - {{ item.nombre }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </div>
+
+  <div *ngIf="currentProduct" class="product-info-card">
+    <div class="product-header">
+      <div class="product-id">
+        <mat-icon>fingerprint</mat-icon>
+        <span>{{ currentProduct.productId }}</span>
+      </div>
+      <h3 class="product-name">{{ currentProduct.nombre }}</h3>
+      <div
+        class="stock-indicator"
+        [class]="currentProduct.cantidad <= 5 ? 'danger' : 'safe'"
+      >
+        <mat-icon>inventory</mat-icon>
+        <span>{{ currentProduct.cantidad }} unidades</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="console-table">
+    <table mat-table [dataSource]="movimientos" class="console-data">
+      <ng-container matColumnDef="tipo">
+        <th mat-header-cell *matHeaderCellDef class="console-th">TIPO</th>
+        <td mat-cell *matCellDef="let movimiento" class="console-td">
+          <div
+            class="movement-type"
+            [class.entrada]="movimiento.tipo === 'entrada'"
+            [class.salida]="movimiento.tipo === 'salida'"
+          >
+            <mat-icon>{{
+              movimiento.tipo === "entrada" ? "arrow_downward" : "arrow_upward"
+            }}</mat-icon>
+            <span>{{ movimiento.tipo | uppercase }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="cantidad">
+        <th mat-header-cell *matHeaderCellDef class="console-th">CANTIDAD</th>
+        <td mat-cell *matCellDef="let movimiento" class="console-td">
+          <span>{{ movimiento.cantidad }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="fecha">
+        <th mat-header-cell *matHeaderCellDef class="console-th">FECHA</th>
+        <td mat-cell *matCellDef="let movimiento" class="console-td">
+          <span>{{ movimiento.fecha | date : "medium" }}</span>
+        </td>
+      </ng-container>
+
+      <tr
+        mat-header-row
+        *matHeaderRowDef="displayedColumns"
+        class="console-header-row"
+      ></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="console-row"
+      ></tr>
+    </table>
+  </div>
+
+  <div *ngIf="movimientos.length === 0" class="no-results">
+    <mat-icon>find_in_page</mat-icon>
+    <p>No se encontraron movimientos</p>
+  </div>
+</div>

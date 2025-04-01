@@ -1,0 +1,165 @@
+<!-- src/app/catalog/components/product-list/product-list.component.html -->
+<div class="admin-console">
+  <div class="admin-header">
+    <div class="admin-title">
+      <mat-icon class="admin-icon">admin_panel_settings</mat-icon>
+      <h2>Consola de Administración</h2>
+      <span class="admin-badge">Premium</span>
+    </div>
+    <div class="admin-controls">
+      <span class="item-count">{{paginationState.length}} productos</span>
+      <button mat-raised-button color="accent" routerLink="/catalogo/add-product" class="add-btn">
+        <mat-icon>add_circle</mat-icon>
+        Nuevo Producto
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filter-section">
+    <mat-expansion-panel class="admin-filter-panel" [expanded]="!isMobileOrTablet">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>filter_alt</mat-icon>
+          <span>Filtros Avanzados</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
+        <div class="filter-grid">
+          <!-- Grupo 1 -->
+          <mat-form-field appearance="outline" class="admin-form-field">
+            <mat-label>Categoría</mat-label>
+            <mat-select formControlName="categoria">
+              <mat-option value="">Todas</mat-option>
+              <mat-option value="hombre">Hombre</mat-option>
+              <mat-option value="mujer">Mujer</mat-option>
+              <mat-option value="nino">Niño</mat-option>
+              <mat-option value="nina">Niña</mat-option>
+              <mat-option value="unisexAdultos">Unisex Adultos</mat-option>
+              <mat-option value="unisexnNinos">Unisex niños</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Grupo 2 -->
+          <mat-form-field appearance="outline" class="admin-form-field">
+            <mat-label>Material</mat-label>
+            <mat-select formControlName="material">
+              <mat-option value="">Todos</mat-option>
+              <mat-option value="oro de 18 kilates">Oro 18k</mat-option>
+              <mat-option value="oro laminado">Oro laminado</mat-option>
+              <mat-option value="oro de 24 kilates">Oro 24k</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Grupo 3 -->
+          <mat-form-field appearance="outline" class="admin-form-field">
+            <mat-label>Precio Mínimo</mat-label>
+            <span matPrefix>$&nbsp;</span>
+            <input matInput type="number" formControlName="minPrice" min="0">
+          </mat-form-field>
+
+          <!-- Grupo 4 -->
+          <mat-form-field appearance="outline" class="admin-form-field">
+            <mat-label>Precio Máximo</mat-label>
+            <span matPrefix>$&nbsp;</span>
+            <input matInput type="number" formControlName="maxPrice" min="0">
+          </mat-form-field>
+        </div>
+
+        <div class="filter-actions">
+          <button mat-stroked-button type="button" (click)="resetForm()" class="reset-btn">
+            <mat-icon>restart_alt</mat-icon>
+            Reiniciar
+          </button>
+          <button mat-raised-button type="submit" color="primary" class="apply-btn">
+            <mat-icon>search</mat-icon>
+            Aplicar Filtros
+          </button>
+        </div>
+      </form>
+    </mat-expansion-panel>
+  </div>
+
+  <!-- Lista de Productos -->
+  <div class="product-grid">
+    <div *ngFor="let product of dataSource.data" class="admin-product-card" [class.low-stock]="product.stock <= 5">
+      <div class="product-header">
+        <div class="product-id">
+          <mat-icon>fingerprint</mat-icon>
+          <span>{{product.productId}}</span>
+        </div>
+        <div class="stock-status">
+          <span class="stock-badge" [class.critical]="product.stock <= 5">
+            {{product.stock}} unidades
+          </span>
+        </div>
+      </div>
+
+      <div class="product-image-container" (click)="expandImage(product.picture)">
+        <img [src]="product.picture" [alt]="product.nombre" class="product-image">
+        <div class="image-overlay">
+          <mat-icon>zoom_in</mat-icon>
+        </div>
+      </div>
+
+      <div class="product-details">
+        <h3 class="product-name">{{product.nombre}}</h3>
+
+        <div class="product-meta">
+          <div class="meta-item">
+            <mat-icon class="meta-icon">category</mat-icon>
+            <span>{{product.categoria | titlecase}}</span>
+          </div>
+          <div class="meta-item">
+            <mat-icon class="meta-icon">layers</mat-icon>
+            <span>{{product.material | titlecase}}</span>
+          </div>
+          <div class="meta-item">
+            <mat-icon class="meta-icon">style</mat-icon>
+            <span>{{product.accesorio | titlecase}}</span>
+          </div>
+        </div>
+
+        <div class="product-footer">
+          <div class="product-price">
+            {{product.precioDeCompra | currency:'USD':'symbol':'1.2-2'}}
+          </div>
+
+          <div class="product-actions">
+            <button mat-icon-button [matTooltip]="'Editar ' + product.nombre" (click)="editProduct(product._id)" class="action-btn edit">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button [matTooltip]="'Ver detalles de ' + product.nombre" (click)="viewDetails(product._id)" class="action-btn view">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paginación -->
+  <mat-paginator [length]="paginationState.length"
+                 [pageSize]="paginationState.pageSize"
+                 [pageIndex]="paginationState.pageIndex"
+                 [pageSizeOptions]="[5, 10, 20, 50]"
+                 showFirstLastButtons
+                 class="admin-paginator">
+  </mat-paginator>
+
+  <!-- Modal de Imagen -->
+  <div class="image-modal-backdrop" *ngIf="isExpanded" (click)="closeImage()">
+    <div class="image-modal-content" (click)="$event.stopPropagation()">
+      <img [src]="expandedImageUrl" alt="Vista ampliada">
+      <button mat-icon-button class="close-modal-btn" (click)="closeImage()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Spinner de carga -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <mat-spinner diameter="50" color="accent"></mat-spinner>
+  </div>
+</div>

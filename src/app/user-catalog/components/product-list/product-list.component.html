@@ -1,0 +1,230 @@
+<div class="console-container">
+  <div class="console-header">
+    <div class="console-title">
+      <mat-icon>inventory_2</mat-icon>
+      <h2>Catálogo de Productos</h2>
+    </div>
+    <div class="console-controls">
+      <span class="console-count">{{paginationState.length}} artículos</span>
+      <button mat-icon-button class="cart-btn" (click)="toggleCart()" [matBadge]="cartItems.length" matBadgeColor="warn">
+        <mat-icon>shopping_cart</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="filter-section">
+    <div class="filter-toggle" (click)="toggleSearchForm()" *ngIf="isMobileOrTablet">
+      <mat-icon>filter_list</mat-icon>
+      <span>Filtros</span>
+      <mat-icon>{{isSearchExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
+    </div>
+
+    <div class="filter-content" [class.expanded]="isSearchExpanded">
+      <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
+        <div class="filter-grid">
+          <div class="filter-group">
+            <label class="filter-label">Categoría</label>
+            <div class="custom-select">
+              <select formControlName="categoria" class="filter-select">
+                <option value="">Todas</option>
+                <option value="hombre">Hombre</option>
+                <option value="mujer">Mujer</option>
+                <option value="nino">Niño</option>
+                <option value="nina">Niña</option>
+                <option value="unisexNinos">Unisex niños</option>
+                <option value="unisexAdultos">Unisex adultos</option>
+              </select>
+              <div class="select-arrow"></div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Material</label>
+            <div class="custom-select">
+              <select formControlName="material" class="filter-select">
+                <option value="">Todos</option>
+                <option value="oro de 18 kilates">Oro 18k</option>
+                <option value="oro laminado">Oro laminado</option>
+                <option value="oro de 24 kilates">Oro 24k</option>
+              </select>
+              <div class="select-arrow"></div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Precio Mínimo</label>
+            <div class="price-input">
+              <span class="currency">$</span>
+              <input type="number" formControlName="minPrice" min="0" class="filter-input no-spinner">
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Precio Máximo</label>
+            <div class="price-input">
+              <span class="currency">$</span>
+              <input type="number" formControlName="maxPrice" min="0" class="filter-input no-spinner">
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-actions">
+          <button type="button" class="filter-btn reset" (click)="resetForm()">
+            <mat-icon>clear</mat-icon>
+            Limpiar
+          </button>
+          <button type="submit" class="filter-btn apply">
+            <mat-icon>search</mat-icon>
+            Aplicar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="product-grid">
+    <div *ngFor="let product of dataSource.data" class="product-card">
+      <div class="card-header">
+        <div class="product-id">
+          <mat-icon>fingerprint</mat-icon>
+          <span>{{product.productId}}</span>
+        </div>
+        <div class="stock-indicator"
+             [class.danger]="product.stock <= 5"
+             [class.safe]="product.stock > 5">
+          <mat-icon>inventory</mat-icon>
+          {{product.stock}} unidades
+        </div>
+      </div>
+
+      <div class="product-image" (click)="expandImage(product.picture)">
+        <img [src]="product.picture" [alt]="product.nombre">
+        <div class="image-hover-effect">
+          <mat-icon>zoom_in</mat-icon>
+        </div>
+      </div>
+
+      <div class="product-info">
+        <h3 class="product-name">{{product.nombre}}</h3>
+        <div class="product-meta">
+          <p><mat-icon>category</mat-icon> {{product.categoria | titlecase}}</p>
+          <p><mat-icon>layers</mat-icon> {{product.material | titlecase}}</p>
+          <p><mat-icon>style</mat-icon> {{product.accesorio | titlecase}}</p>
+        </div>
+        <div class="product-actions">
+          <button mat-icon-button class="action-btn" (click)="viewDetails(product._id)" matTooltip="Ver detalles">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-icon-button class="action-btn cart-btn" (click)="addToCart(product); $event.stopPropagation()" matTooltip="Añadir al carrito">
+            <mat-icon>add_shopping_cart</mat-icon>
+          </button>
+          <button mat-icon-button class="action-btn whatsapp-btn" (click)="contactViaWhatsApp(product); $event.stopPropagation()" matTooltip="Consultar por WhatsApp">
+            <svg viewBox="0 0 24 24" width="24" height="24" class="whatsapp-icon">
+              <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="product-price">
+          {{product.precioDeCompra | currency:'USD':'symbol':'1.2-2'}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Carrito de compras -->
+  <div class="cart-overlay" *ngIf="isCartOpen" (click)="toggleCart()"></div>
+
+  <div class="cart-container" [class.open]="isCartOpen">
+    <div class="cart-header">
+      <h3>Tu carrito de compras</h3>
+      <button mat-icon-button (click)="toggleCart()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="cart-content">
+      <div *ngIf="cartItems.length === 0" class="empty-cart">
+        <mat-icon>remove_shopping_cart</mat-icon>
+        <p>Tu carrito está vacío</p>
+      </div>
+
+      <div *ngFor="let item of cartItems; let i = index" class="cart-item">
+        <div class="cart-item-image">
+          <img [src]="item.product.picture" [alt]="item.product.nombre">
+        </div>
+
+        <div class="cart-item-details">
+          <h4>{{item.product.nombre}}</h4>
+          <p>Código: {{item.product.productId}}</p>
+          <p>Precio: {{item.product.precioDeCompra | currency:'USD':'symbol':'1.2-2'}}</p>
+
+          <div class="quantity-control">
+            <button mat-icon-button (click)="updateQuantity(item, item.quantity - 1)">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <input type="number" [(ngModel)]="item.quantity" min="1" (change)="updateQuantity(item, item.quantity)">
+            <button mat-icon-button (click)="updateQuantity(item, item.quantity + 1)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="cart-item-actions">
+          <button mat-icon-button (click)="removeFromCart(i)">
+            <mat-icon>delete</mat-icon>
+          </button>
+          <span class="subtotal">{{item.product.precioDeCompra * item.quantity | currency:'USD':'symbol':'1.2-2'}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cart-footer" *ngIf="cartItems.length > 0">
+      <div class="cart-total">
+        <span>Total:</span>
+        <span>{{getCartTotal() | currency:'USD':'symbol':'1.2-2'}}</span>
+      </div>
+      <button class="checkout-btn" (click)="sendWhatsAppMessage()">
+        <mat-icon>whatsapp</mat-icon>
+        Consultar por WhatsApp
+      </button>
+    </div>
+  </div>
+
+
+  <!-- Reemplaza el mat-paginator existente por esto -->
+<div class="premium-pagination-container">
+  <div class="pagination-wrapper">
+    <mat-paginator [length]="paginationState.length"
+                   [pageSize]="paginationState.pageSize"
+                   [pageIndex]="paginationState.pageIndex"
+                   [pageSizeOptions]="[5, 10, 20, 50]"
+                   showFirstLastButtons
+                   class="gold-paginator">
+    </mat-paginator>
+
+    <button mat-icon-button class="gold-cart-btn"
+            [class.visible]="cartItems.length > 0"
+            (click)="toggleCart()"
+            [matBadge]="cartItems.length"
+            matBadgeColor="warn"
+            matTooltip="Ver carrito"
+            matBadgePosition="before"
+            matBadgeSize="small">
+      <mat-icon class="gold-icon">shopping_cart</mat-icon>
+    </button>
+  </div>
+</div>
+
+  <div class="image-modal" *ngIf="isExpanded" (click)="closeImage()">
+    <div class="modal-content">
+      <img [src]="expandedImageUrl" alt="Imagen ampliada">
+      <button mat-icon-button class="close-btn" (click)="closeImage()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-overlay">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+</div>
