@@ -1,9 +1,12 @@
+// src/app/catalog/components/modificar-producto/modificar-producto.component.ts
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import Swal from 'sweetalert2';
 import { Product } from '../../../models/product';
 import { ProductService } from '../../../shared/services/productos/product.service';
+import { ActivatedRoute } from '@angular/router';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-modificar-producto',
@@ -17,15 +20,18 @@ export class ModificarProductoComponent implements OnInit {
   product: Product | null = null;
   isLoading = false;
   isEditing = false;
-  isSubmitting = false; // Nuevo estado para controlar el envío
+  isSubmitting = false;
   selectedFile: File | null = null;
   imagePreview: string | ArrayBuffer | null = null;
   uploadProgress: number | null = null;
+  allProductIds: string[] = [];
+  filteredProductIds: string[] = [];
 
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private route: ActivatedRoute
   ) {
     this.searchForm = this.fb.group({
       productId: ['', [Validators.required, Validators.pattern(/^[A-Za-z0-9]{5,20}$/)]]
@@ -41,9 +47,53 @@ export class ModificarProductoComponent implements OnInit {
       categoria: ['', Validators.required],
       descripcion: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]]
     });
+
+    // Cargar todos los productIds al iniciar
+    this.loadAllProductIds();
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      const productId = params['productId'];
+      if (productId) {
+        this.searchForm.patchValue({ productId });
+        this.searchProduct(); // Esto buscará automáticamente el producto
+      }
+    });
+
+    // Configurar autocompletado
+    this.searchForm.get('productId')?.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      )
+      .subscribe(value => {
+        this.filterProductIds(value);
+      });
+  }
+
+  loadAllProductIds(): void {
+    this.productService.getAllProducts().subscribe({
+      next: (products: Product[]) => {
+        this.allProductIds = products.map(p => p.productId);
+        this.filteredProductIds = [...this.allProductIds];
+      },
+      error: (error) => {
+        console.error('Error loading product IDs:', error);
+      }
+    });
+  }
+
+  filterProductIds(value: string): void {
+    if (!value) {
+      this.filteredProductIds = [...this.allProductIds];
+      return;
+    }
+    const filterValue = value.toLowerCase();
+    this.filteredProductIds = this.allProductIds.filter(
+      id => id.toLowerCase().includes(filterValue)
+    );
+  }
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];

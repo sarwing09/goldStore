@@ -23,7 +23,6 @@ export class LoginComponent {
   }
 
   login() {
-    console.log(this.miFormulario.value);
     const { email, password } = this.miFormulario.value;
 
     this.authService.login(email, password)
@@ -31,7 +30,7 @@ export class LoginComponent {
         console.log(ok)
 
         if (ok === true) {
-          this.router.navigateByUrl('/dashboard')
+          this.router.navigateByUrl('/catalogo/admin-catalog')
         } else {
           //TODO: mostrar mensaje de error
 

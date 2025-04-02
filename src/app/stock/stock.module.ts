@@ -8,6 +8,7 @@ import { MaterialModule } from '../material/material.module';
 import { AgregarStockComponent } from './components/agregar-stock/agregar-stock.component';
 import { AgregarMovimientoComponent } from './components/agregar-movimiento/agregar-movimiento.component';
 import { BuscarMovimientosComponent } from './components/buscar-movimientos/buscar-movimientos.component';
+import { DashboardComponent } from '../dashboard/dashboard.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { BuscarMovimientosComponent } from './components/buscar-movimientos/busc
   ],
   imports: [
     CommonModule,
+    DashboardComponent,
     ReactiveFormsModule,
     StockRoutingModule,
     MaterialModule

@@ -1,3 +1,4 @@
+<app-dashboard></app-dashboard>
 <div class="console-container">
   <div class="console-header">
     <div class="console-title">
@@ -11,28 +12,32 @@
 
   <div class="search-section">
     <mat-form-field appearance="outline" class="search-input">
-      <mat-label>Buscar por código</mat-label>
+      <mat-label>Buscar por código o nombre</mat-label>
       <input
         matInput
         [matAutocomplete]="auto"
         [formControl]="productIdControl"
+        (keyup.enter)="searchMovements()"
       />
-      <mat-icon matSuffix>search</mat-icon>
-      <mat-autocomplete
-        #auto="matAutocomplete"
-        (optionSelected)="onOptionSelected($event)"
-      >
-        <mat-option
-          *ngFor="let item of filteredOptions"
-          [value]="item.productId"
-        >
-          {{ item.productId }} - {{ item.nombre }}
+      <button mat-icon-button matSuffix (click)="searchMovements()">
+        <mat-icon>search</mat-icon>
+      </button>
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="searchMovements()">
+        <mat-option *ngFor="let option of filteredOptions | async" [value]="option.productId">
+          <div class="autocomplete-option">
+            <span class="product-id">{{ option.productId }}</span>
+            <span class="product-name">{{ option.nombre }}</span>
+          </div>
         </mat-option>
       </mat-autocomplete>
     </mat-form-field>
   </div>
 
-  <div *ngIf="currentProduct" class="product-info-card">
+  <div *ngIf="isLoading" class="loading-indicator">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="currentProduct && !isLoading" class="product-info-card">
     <div class="product-header">
       <div class="product-id">
         <mat-icon>fingerprint</mat-icon>
@@ -49,7 +54,7 @@
     </div>
   </div>
 
-  <div class="console-table">
+  <div class="console-table" *ngIf="!isLoading && movimientos.length > 0">
     <table mat-table [dataSource]="movimientos" class="console-data">
       <ng-container matColumnDef="tipo">
         <th mat-header-cell *matHeaderCellDef class="console-th">TIPO</th>
@@ -94,8 +99,8 @@
     </table>
   </div>
 
-  <div *ngIf="movimientos.length === 0" class="no-results">
+  <div *ngIf="movimientos.length === 0 && !isLoading && productIdControl.value" class="no-results">
     <mat-icon>find_in_page</mat-icon>
-    <p>No se encontraron movimientos</p>
+    <p>No se encontraron movimientos para este producto</p>
   </div>
 </div>

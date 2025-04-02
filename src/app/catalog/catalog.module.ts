@@ -8,6 +8,9 @@ import { MaterialModule } from '../material/material.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AgregarProductoComponent } from './components/agregar-producto/agregar-producto.component';
 import { ModificarProductoComponent } from './components/modificar-producto/modificar-producto.component';
+import { DashboardComponent } from '../dashboard/dashboard.component';
+import { ProductsTableComponent } from './components/products-table/products-table.component';
+import { RouterLink } from '@angular/router';
 
 
 
@@ -16,10 +19,13 @@ import { ModificarProductoComponent } from './components/modificar-producto/modi
    ProductListComponent,
    ProductDetailComponent,
    AgregarProductoComponent,
-   ModificarProductoComponent
+   ModificarProductoComponent,
+   ProductsTableComponent
   ],
   imports: [
     CommonModule,
+    RouterLink,
+    DashboardComponent,
     CatalogRoutingModule,
     MaterialModule,
     ReactiveFormsModule

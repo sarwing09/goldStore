@@ -7,6 +7,7 @@ export const routes: Routes = [
     path: 'catalogo',
     loadChildren: () => import('./catalog/catalog.module').then(m => m.CatalogModule),
     canActivate:[validarTokenGuard],
+    canActivateChild: [validarTokenGuard], // 👈
     canMatch: [validarTokenGuard2]
   },
   {
@@ -32,7 +33,7 @@ export const routes: Routes = [
   },
   {
     path:'**',
-    redirectTo:'auth'
+    redirectTo:'tienda'
   }
   
 ];

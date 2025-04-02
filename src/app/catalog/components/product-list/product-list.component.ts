@@ -1,4 +1,4 @@
-// src/app/user-catalog/components/product-list/product-list.component.ts
+// src/app/catalog/components/product-list/product-list.component.ts
 import { Component, OnInit, HostListener, Inject, PLATFORM_ID, ViewChild } from '@angular/core';
 import { ProductService } from '../../../shared/services/productos/product.service';
 import { StockService } from '../../../shared/services/productos/stock.service';
@@ -131,8 +131,11 @@ export class ProductListComponent implements OnInit {
     }
   }
 
-  editProduct(id: any): void {
-    if (id) this.router.navigate(['/catalogo/edit-product', id]);
+  editProduct(productId: string): void {
+    this.router.navigate(['/catalogo/modificar'], {
+      queryParams: { productId },
+      skipLocationChange: true
+    });
   }
 
   onSearch(): void {

@@ -4,12 +4,13 @@ import { Observable, throwError, forkJoin, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { Stock, Movimiento } from '../../../models/stock';
 import { Product } from '../../../models/product';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StockService {
-  private apiUrl = 'http://localhost:4000/stock/';
+  private apiUrl: string = `${environment.baseUrl}/stock/`;
 
   constructor(private http: HttpClient) {}
 

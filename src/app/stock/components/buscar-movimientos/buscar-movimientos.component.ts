@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import { StockService } from '../../../shared/services/productos/stock.service';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { debounceTime, distinctUntilChanged, switchMap, startWith, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-buscar-movimientos',
-  standalone: false,
+  standalone:false,
   templateUrl: './buscar-movimientos.component.html',
   styleUrls: ['./buscar-movimientos.component.css']
 })
@@ -14,40 +14,50 @@ export class BuscarMovimientosComponent implements OnInit {
   searchForm: FormGroup;
   movimientos: any[] = [];
   displayedColumns: string[] = ['tipo', 'cantidad', 'fecha'];
-  stockItems: any[] = [];
-  filteredOptions: any[] = [];
   currentProduct: any = null;
+  isLoading = false;
+  filteredOptions!: Observable<any[]>;
 
   constructor(
-    private route: ActivatedRoute,
     private stockService: StockService,
     private fb: FormBuilder
   ) {
     this.searchForm = this.fb.group({
-      productId: new FormControl('') // Cambio clave aquí
+      productId: new FormControl('')
     });
   }
 
   ngOnInit(): void {
-    this.loadStockItems();
+    // Configurar el autocomplete
+    this.filteredOptions = this.productIdControl.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(value => this._filter(value || ''))
+    );
 
-    this.route.queryParams.subscribe(params => {
-      if (params['productId']) {
-        this.loadProductDetails(params['productId']);
-      }
-    });
+    // Cargar todos los productos al inicio para el autocomplete
+    this.loadAllProducts();
   }
 
-  loadStockItems(): void {
-    this.stockService.getAllStock().subscribe({
-      next: (data) => {
-        this.stockItems = data;
-        this.filteredOptions = data;
-      }
-    });
+  private _filter(value: string): Observable<any[]> {
+    const filterValue = value.toLowerCase();
+    return this.stockService.getAllStock().pipe(
+      map(stocks => stocks.filter(stock => 
+        stock.productId.toLowerCase().includes(filterValue) || 
+        stock.nombre.toLowerCase().includes(filterValue)
+      )))
   }
 
-  loadProductDetails(productId: string): void {
+  loadAllProducts(): void {
+    this.stockService.getAllStock().subscribe();
+  }
+
+  searchMovements(): void {
+    const productId = this.productIdControl.value;
+    if (!productId) return;
+
+    this.isLoading = true;
     this.stockService.getStockByProductId(productId).subscribe({
       next: (data) => {
         this.currentProduct = {
@@ -56,16 +66,16 @@ export class BuscarMovimientosComponent implements OnInit {
           cantidad: data.cantidad
         };
         this.movimientos = data.movimientos || [];
+        this.isLoading = false;
+      },
+      error: () => {
+        this.currentProduct = null;
+        this.movimientos = [];
+        this.isLoading = false;
       }
     });
   }
 
-  onOptionSelected(event: MatAutocompleteSelectedEvent): void {
-    const productId = event.option.value;
-    this.loadProductDetails(productId);
-  }
-
-  // Añadimos un getter para el control del formulario
   get productIdControl(): FormControl {
     return this.searchForm.get('productId') as FormControl;
   }

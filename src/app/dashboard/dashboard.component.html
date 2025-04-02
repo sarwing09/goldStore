@@ -24,48 +24,65 @@
     <h2 class="dashboard-title">Gold Store</h2>
     <nav>
       <ul>
-        <li>
-          <a routerLink="/catalogo/admin-catalog" (click)="isMobile && toggleDashboard()">
-            <mat-icon>inventory_2</mat-icon>
-            <span>Catálogo</span>
-            <div class="badge">12</div>
-          </a>
+        <!-- Sección de Productos -->
+        <li class="section-title">
+          <mat-icon>inventory_2</mat-icon>
+          <span>Productos</span>
         </li>
         <li>
-          <a routerLink="/tienda" (click)="isMobile && toggleDashboard()">
-            <mat-icon>store</mat-icon>
-            <span>Tienda</span>
+          <a routerLink="/catalogo/admin-catalog" (click)="isMobile && toggleDashboard()">
+            <mat-icon>list_alt</mat-icon>
+            <span>Lista de Productos</span>
+            <div class="badge">12</div>
           </a>
         </li>
         <li>
           <a routerLink="/catalogo/add-product" (click)="isMobile && toggleDashboard()">
             <mat-icon>add_box</mat-icon>
-            <span>Insertar Producto</span>
+            <span>Agregar Producto</span>
           </a>
         </li>
         <li>
+          <a routerLink="/catalogo/modificar" (click)="isMobile && toggleDashboard()">
+            <mat-icon>edit</mat-icon>
+            <span>Editar Producto</span>
+          </a>
+        </li>
+        
+        <!-- Sección de Stock -->
+        <li class="section-title">
+          <mat-icon>inventory</mat-icon>
+          <span>Stock</span>
+        </li>
+        <li>
           <a routerLink="/stock" (click)="isMobile && toggleDashboard()">
-            <mat-icon>inventory</mat-icon>
-            <span>Stock</span>
+            <mat-icon>format_list_bulleted</mat-icon>
+            <span>Lista de Stock</span>
             <div class="badge danger">3</div>
           </a>
         </li>
         <li>
           <a routerLink="/stock/agregar-stock" (click)="isMobile && toggleDashboard()">
             <mat-icon>playlist_add</mat-icon>
-            <span>Movimiento inicial</span>
+            <span>Stock Inicial</span>
           </a>
+        </li>
+
+        <!-- Sección de Movimientos -->
+        <li class="section-title">
+          <mat-icon>compare_arrows</mat-icon>
+          <span>Movimientos</span>
         </li>
         <li>
           <a routerLink="/stock/agregar-movimiento" (click)="isMobile && toggleDashboard()">
-            <mat-icon>compare_arrows</mat-icon>
-            <span>Insertar movimientos</span>
+            <mat-icon>input</mat-icon>
+            <span>Registrar Movimiento</span>
           </a>
         </li>
         <li>
           <a routerLink="/stock/buscar-movimientos" (click)="isMobile && toggleDashboard()">
             <mat-icon>history</mat-icon>
-            <span>Historial de movimientos</span>
+            <span>Historial</span>
           </a>
         </li>
       </ul>
